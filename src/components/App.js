@@ -1,14 +1,29 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Grid } from 'semantic-ui-react';
+
+import ServersPanel from './ServersPanel/ServersPanel';
+import RoomsPanel from './RoomsPanel/RoomsPanel';
+import Messages from './Messages/Messages';
+import MetaPanel from './MetaPanel/MetaPanel';
+
 import './App.css';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        App
-      </div>
-    );
-  }
-}
+const App = () => (
+  <Grid columns="equal" className="App">
+
+    <Grid.Column width="3">
+      <ServersPanel />
+      <RoomsPanel />
+    </Grid.Column>
+
+    <Grid.Column>
+      <Messages />
+    </Grid.Column>
+
+    <Grid.Column width="4">
+      <MetaPanel />
+    </Grid.Column>
+  </Grid>
+)
 
 export default App;

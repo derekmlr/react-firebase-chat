@@ -85,32 +85,34 @@ class Register extends React.Component {
 			this.setState({ errors: [], loading: true }); // Reset errors
 			
 			// Register user to Firebase
-			firebase
-				.auth()
+			firebase.auth()
 				.createUserWithEmailAndPassword(this.state.email, this.state.password)
 				.then(createdUser => {
 					// User is created! Add display name and avatar data...
-					console.log(createdUser);
 					createdUser.user.updateProfile({
 						displayName: this.state.displayName,
 						photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
 					})
 					.then(() => {
 						// Saved metadata to user record!
-						this.saveUser(createdUser).then(() => {
-							console.log(`User ${this.state.displayName} saved`);
-						});
+						this.saveUser(createdUser);
 					})
 					.catch(err => {
 						// Couldn't update profile... Throw error
 						console.error(err);
-						this.setState({ errors: this.state.errors.concat(err), loading: false });
+						this.setState({ 
+							errors: this.state.errors.concat(err), 
+							loading: false 
+						});
 					})
 				})
 				.catch(err => {
 					// User account couldn't be created... Throw error
 					console.error(err);
-					this.setState({ errors: this.state.errors.concat(err), loading: false });
+					this.setState({ 
+						errors: this.state.errors.concat(err), 
+						loading: false 
+					});
 				});
 			}
 	}
@@ -129,6 +131,7 @@ class Register extends React.Component {
 	 * Show error visual on input
 	 */
 	handleInputErrorVisual = (errors, errorTerm) => {
+		// Return true if error message contains an error term
 		return errors.some(error => error.message.toLowerCase().includes(errorTerm)) ? 'error' : '';
 	}
 
@@ -138,9 +141,9 @@ class Register extends React.Component {
 		return (
 			<Grid textAlign="center" verticalAlign="middle" className="App">
 				<Grid.Column style={{ maxWidth: 450 }}>
-					<Header as="h2" icon color="blue" textAlign="center">
-						<Icon name="chat" color="blue" />
-						Sign Up
+					<Header as="h1" icon color="orange" textAlign="center">
+						<Icon name="comments" color="orange" />
+						Sign Up to Chat
 					</Header>
 					{errors.length > 0 && (
 						<Message error>
@@ -192,7 +195,7 @@ class Register extends React.Component {
 								type="password" 
 							/>
 
-							<Button disabled={loading} className={loading ? 'loading' : ''} color="blue" fluid size="large">Create Account</Button>
+							<Button disabled={loading} className={loading ? 'loading' : ''} color="orange" fluid size="large">Create Account</Button>
 						</Segment>
 					</Form>
 					<Message>
