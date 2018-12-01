@@ -6,7 +6,7 @@ import { Provider, connect } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 import firebase from './config/firebase';
-import { setUser } from './actions';
+import { setUser, clearUser } from './actions';
 
 import App from './components/App';
 import Login from './components/Auth/Login';
@@ -24,8 +24,13 @@ class Root extends React.Component {
 		// Redirect user to "/" if authenticated
 		firebase.auth().onAuthStateChanged(user => {
 			if (user) {
+				// User logged in, go to app
 				this.props.setUser(user);
 				this.props.history.push('/');
+			} else {
+				// Guest or logged out, go to /login
+				this.props.history.push('/login');
+				this.props.clearUser();
 			}
 		})
 	}
@@ -48,7 +53,7 @@ const mapStateToProps = (state) => {
 const RootWithRouter = withRouter(
 	connect(
 		mapStateToProps, 
-		{ setUser }
+		{ setUser, clearUser }
 	)(Root)	
 );
 
