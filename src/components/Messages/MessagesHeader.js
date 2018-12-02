@@ -5,10 +5,10 @@ class MessagesHeader extends React.Component {
 	render() {
 		return (
 			<Segment clearing>
-			{ /* Channel Header */ }
+				{ /* Channel Header */ }
 				<Header fluid="true" as="h2" floated="left" style={{ marginBottom:0 }}>
 					<span>
-						Channel Name &nbsp;
+						{this.props.channel && this.props.channel.name} &nbsp;
 						<Icon name="star outline" color="black" size="small" />
 					</span>
 					<Header.Subheader><small>2 Users</small></Header.Subheader>

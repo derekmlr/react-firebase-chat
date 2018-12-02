@@ -18,7 +18,7 @@ const App = ({ currentUser, currentChannel }) => (
   <Grid columns="equal" className="App">
     <ServersPanel />
     <RoomsPanel
-      key={currentUser && currentUser.uid} 
+      /*key={currentUser && currentUser.uid}*/
       currentUser={currentUser} 
     />
 
@@ -26,6 +26,7 @@ const App = ({ currentUser, currentChannel }) => (
       <Messages 
         key={currentChannel && currentChannel.id}
         currentChannel={currentChannel} 
+        currentUser={currentUser}
       />
     </Grid.Column>
 

@@ -142,17 +142,20 @@ class Channels extends React.Component {
 			<React.Fragment>
 				<Menu.Menu style={{ paddingBottom: '2em' }}>
 					<Menu.Item>
-						<span>
-							<Icon name="exchange" /> CHANNELS
-						</span>{' '}
-						({ channels.length }) <Icon name="add" onClick={this.openModal} />
+						<small>
+							<span>
+								<Icon name="exchange" /> CHANNELS
+							</span>{' '}
+							({ channels.length })
+						</small> 
+						<Icon name="add" onClick={this.openModal} />
 					</Menu.Item>
 					{this.displayChannels(channels)}
 				</Menu.Menu>
 
 				{ /* Add channel modal */ }
 				<Modal size="tiny" open={modal} onClose={this.closeModal}>
-					<Modal.Header>Add a Channel</Modal.Header>
+					<Modal.Header>Create a new Channel</Modal.Header>
 					<Modal.Content>
 						<Form onSubmit={this.handleSubmit}>
 							<Form.Field>
@@ -175,9 +178,9 @@ class Channels extends React.Component {
 					</Modal.Content>
 					<Modal.Actions>
 						<Button primary onClick={this.handleSubmit}>
-							Add
+							Add Channel
 						</Button>
-						<Button secondary onClick={this.closeModal}>
+						<Button onClick={this.closeModal}>
 							Cancel
 						</Button>
 					</Modal.Actions>

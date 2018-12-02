@@ -1,4 +1,9 @@
 html,
+body {
+	overflow:hidden;
+}
+
+html,
 body,
 .App {
 	background: #eee;
@@ -7,11 +12,16 @@ body,
 }
 
 .messages {
-	height: calc(100vh - 320px);
-	overflow-y: scroll;
+	height: calc(100vh - 210px);
+	overflow-y: auto;
 }
 
 .message-form {
 	bottom: 0;
 	position: fixed;
+}
+
+.message__self {
+	border-left: 2px solid orange;
+	padding-left: 1em;
 }
