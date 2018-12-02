@@ -2,6 +2,27 @@ import { combineReducers } from 'redux';
 import * as actionTypes from '../actions/types';
 
 /**
+ * Channel Reducer
+ * 
+ * @param {Object} state 
+ * @param {Object} action 
+ */
+const initialChannelState = {
+	currentChannel: null
+}
+const channel_reducer = (state = initialChannelState, action) => {
+	switch(action.type) {
+		case actionTypes.SET_CURRENT_CHANNEL:
+			return {
+				...state,
+				currentChannel: action.payload.currentChannel
+			}
+		default:
+			return state;
+	}
+}
+
+/**
  * User Reducer
  * 
  * @param {Object} state 
@@ -33,6 +54,7 @@ const user_reducer = (state = initialUserState, action) => {
  * Combine all reducers via Redux & export
  */
 const rootReducer = combineReducers({
+	channel: channel_reducer,
 	user: user_reducer
 });
 

@@ -1,7 +1,17 @@
 html,
 body,
 .App {
-	background:#eee;
-	height:100vh;
-	padding:1em;
+	background: #eee;
+	height: 100vh;
+	padding: 1em;
+}
+
+.messages {
+	height: calc(100vh - 320px);
+	overflow-y: scroll;
+}
+
+.message-form {
+	bottom: 0;
+	position: fixed;
 }

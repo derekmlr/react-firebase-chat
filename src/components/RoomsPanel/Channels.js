@@ -1,5 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Menu, Icon, Modal, Form, Input, Button } from 'semantic-ui-react';
+
+import { setCurrentChannel } from '../../actions';
 
 import firebase from '../../config/firebase';
 
@@ -10,29 +13,58 @@ class Channels extends React.Component {
 		modal: false,
 		channelName: '',
 		channelDesc: '',
-		channelsRef: firebase.database().ref('channels')
+		channelsRef: firebase.database().ref('channels'),
+		activeChannel: '',
+		initialLoad: true
 	}
 
 	componentDidMount() {
 		this.addListeners();
 	}
 
+	componentWillUnmount() {
+		this.removeListeners();
+	}
+
+	/**
+	 * Listens for channel data changes
+	 */
 	addListeners = () => {
 		let loadedChannels = [];
 		this.state.channelsRef.on('child_added', (snap) => {
 			loadedChannels.push(snap.val());
-			this.setState({ channels: loadedChannels });
+			this.setState({ channels: loadedChannels }, () => this.setFirstChannel());
 		});
 	}
+	removeListeners = () => {
+		this.state.channelsRef.off();
+	}
 
+	/**
+	 * Set current channel on initial load
+	 */
+	setFirstChannel = () => {
+		const firstChannel = this.state.channels[0];
+		if (this.state.initialLoad && this.state.channels.length > 0) {
+			this.props.setCurrentChannel(firstChannel);
+			this.setActiveChannel(firstChannel);
+		}
+		this.setState({ initialLoad: false });
+	}
+
+	/**
+	 * Modal toggle
+	 */
 	openModal = () => this.setState({ modal: true });
-
 	closeModal = () => this.setState({ modal: false });
 
 	handleChange = (event) => {
 		this.setState({ [event.target.name]: event.target.value });
 	}
 
+	/**
+	 * Add a new channel node
+	 */
 	addChannel = () => {
 		const { channelsRef, channelName, channelDesc, user } = this.state;
 		const key = channelsRef.push().key;
@@ -56,6 +88,9 @@ class Channels extends React.Component {
 			});
 	}
 
+	/**
+	 * Submit new channel form
+	 */
 	handleSubmit = (event) => {
 		event.preventDefault();
 		if (this.isFormValid(this.state)) {
@@ -63,20 +98,42 @@ class Channels extends React.Component {
 		}
 	}
 
+	/**
+	 * Check that channel form data is set
+	 */
 	isFormValid = ({ channelName, channelDesc }) => channelName && channelDesc;
 
+	/**
+	 * Display channel items
+	 */
 	displayChannels = (channels) => (
 		channels.length > 0 && channels.map((channel) => (
 			<Menu.Item 
 				key={channel.id} 
-				onClick={() => console.log(channel)} 
+				onClick={() => this.changeChannel(channel)} 
 				name={channel.name} 
 				style={{ opacity: 0.7 }} 
+				active={channel.id === this.state.activeChannel}
 			>
 				# {channel.name}
 			</Menu.Item>
 		))
 	)
+
+	/**
+	 * Handle onClick channel changing
+	 */
+	changeChannel = (channel) => {
+		this.setActiveChannel(channel);
+		this.props.setCurrentChannel(channel);
+	}
+
+	/**
+	 * Set currently active channel indication
+	 */
+	setActiveChannel = (channel) => {
+		this.setState({ activeChannel: channel.id });
+	}
 
 	render() {
 		const { channels, modal } = this.state;
@@ -94,7 +151,7 @@ class Channels extends React.Component {
 				</Menu.Menu>
 
 				{ /* Add channel modal */ }
-				<Modal basic open={modal} onClose={this.closeModal}>
+				<Modal size="tiny" open={modal} onClose={this.closeModal}>
 					<Modal.Header>Add a Channel</Modal.Header>
 					<Modal.Content>
 						<Form onSubmit={this.handleSubmit}>
@@ -130,4 +187,4 @@ class Channels extends React.Component {
 	}
 }
 
-export default Channels;
+export default connect(null, { setCurrentChannel })(Channels);

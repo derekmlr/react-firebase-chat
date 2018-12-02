@@ -9,13 +9,24 @@ import MetaPanel from './MetaPanel/MetaPanel';
 
 import './App.css';
 
-const App = ({ currentUser }) => (
+/**
+ * App Component
+ * 
+ * @param {Object} props 
+ */
+const App = ({ currentUser, currentChannel }) => (
   <Grid columns="equal" className="App">
     <ServersPanel />
-    <RoomsPanel currentUser={currentUser} />
+    <RoomsPanel
+      key={currentUser && currentUser.uid} 
+      currentUser={currentUser} 
+    />
 
     <Grid.Column style={{ marginLeft: 320 }}>
-      <Messages />
+      <Messages 
+        key={currentChannel && currentChannel.id}
+        currentChannel={currentChannel} 
+      />
     </Grid.Column>
 
     <Grid.Column width="3">
@@ -24,10 +35,14 @@ const App = ({ currentUser }) => (
   </Grid>
 )
 
-const mapStateToProps = (state) => {
-	return {
-		currentUser: state.user.currentUser
-	}
-}
+/**
+ * Map Redux global state items to App component's props
+ * 
+ * @param {Object} state 
+ */
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser,
+  currentChannel: state.channel.currentChannel
+});
 
 export default connect(mapStateToProps)(App);
