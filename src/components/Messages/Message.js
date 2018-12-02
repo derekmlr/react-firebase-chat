@@ -18,7 +18,7 @@ class Message extends React.Component {
 	}
 
 	render() {
-		const { message, user } = this.props;
+		const { message } = this.props;
 		
 		return (
 			<Comment>

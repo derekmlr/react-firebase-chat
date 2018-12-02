@@ -22,8 +22,6 @@ class Messages extends React.Component {
 		if (channel && user) {
 			this.addListeners(channel.id)
 		}
-
-		console.log(this.state.messages);
 	}
 	
 	addListeners = (channelId) => {
@@ -52,7 +50,7 @@ class Messages extends React.Component {
 	displayMessages = (messages) => (
 		messages.length > 0 && messages.map((message) => (
 			<Message 
-				key={message.id}
+				key={message.timestamp}
 				message={message} 
 				user={this.state.user}
 			/>
