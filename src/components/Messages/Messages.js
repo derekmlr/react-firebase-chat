@@ -1,5 +1,5 @@
 import React from 'react';
-import { Segment, Comment, Loader } from 'semantic-ui-react';
+import { Segment, Comment, Loader, Message as MessageUI } from 'semantic-ui-react';
 
 import MessagesHeader from './MessagesHeader';
 import MessageForm from './MessageForm';
@@ -8,12 +8,15 @@ import Message from './Message';
 import firebase from '../../config/firebase';
 
 class Messages extends React.Component {
+	loadingTimeout = null;
+
 	state = {
 		messagesRef: firebase.database().ref('messages'),
 		channel: this.props.currentChannel,
 		user: this.props.currentUser,
 		messagesLoading: true,
-		messages:[]
+		messages:[],
+		noMessages: false
 	}
 
 	componentDidMount() {
@@ -22,6 +25,18 @@ class Messages extends React.Component {
 		if (channel && user) {
 			this.addListeners(channel.id)
 		}
+
+		// If messages don't load after 1 second, assume no messages
+		this.loadingTimeout =	setTimeout(() => {
+			if (this.state.messages && this.state.messages.length === 0) {
+				this.setState({ noMessages: true });
+			}
+			this.setState({ messagesLoading: false });
+		}, 1500);
+	}
+
+	componentWillUnmount() {
+		clearTimeout(this.loadingTimeout);
 	}
 	
 	addListeners = (channelId) => {
@@ -39,6 +54,7 @@ class Messages extends React.Component {
 				loadedMessages.push(snap.val());
 				this.setState({
 					messages: loadedMessages,
+					noMessages: false,
 					messagesLoading: false
 				})
 			});
@@ -58,12 +74,21 @@ class Messages extends React.Component {
 	)
 
 	render() {
-		const { messagesRef, channel, user, messages, messagesLoading } = this.state;
+		const { messagesRef, channel, user, messages, messagesLoading, noMessages } = this.state;
 
 		return (
 			<React.Fragment>
 				<MessagesHeader channel={channel} />
 				<Segment className="messages">
+					{noMessages ? (
+						<MessageUI 
+							compact
+							size="tiny"
+							icon="inbox"
+							header="No messages found."
+							content="Be the first by writing a message below!"
+						/>
+					) : ''}
 					{messagesLoading ? (
 						<Loader active style={{ marginTop: '2em' }} inline='centered' />
 					) : (

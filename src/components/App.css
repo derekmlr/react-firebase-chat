@@ -25,3 +25,19 @@ body,
 	border-left: 2px solid orange;
 	padding-left: 1em;
 }
+
+.message-image {
+	padding:1em;
+}
+
+.progress-bar {
+	bottom: 0;
+	left: 0;
+	margin: 0 !important;
+	position: absolute !important;
+	right: 0;
+}
+.progress-bar .bar {
+	border-radius: 0 !important;
+	height: 0.25em !important;
+}

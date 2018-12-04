@@ -1,5 +1,5 @@
 import React from 'react';
-import { Comment } from 'semantic-ui-react';
+import { Comment, Image } from 'semantic-ui-react';
 import moment from 'moment';
 
 class Message extends React.Component {
@@ -8,6 +8,13 @@ class Message extends React.Component {
 	 */
 	isOwnMessage = () => {
 		return this.props.message.user.id === this.props.user.uid ? 'message__self' : '';
+	}
+
+	/**
+	 * Is the message's type an image?
+	 */
+	isImage = (message) => {
+		return message.hasOwnProperty('image') && !message.hasOwnProperty('content');
 	}
 
 	/**
@@ -26,7 +33,9 @@ class Message extends React.Component {
 				<Comment.Content className={this.isOwnMessage()}>
 					<Comment.Author as="a">{message.user.name}</Comment.Author>
 					<Comment.Metadata>{this.timeFromNow()}</Comment.Metadata>
-					<Comment.Text>{message.content}</Comment.Text>
+					{this.isImage(message) ? (
+						<Image src={message.image} className="message-img" />
+					) : <Comment.Text>{message.content}</Comment.Text> }
 				</Comment.Content>
 			</Comment>
 		);
