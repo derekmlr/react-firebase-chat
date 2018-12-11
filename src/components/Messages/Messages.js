@@ -16,7 +16,11 @@ class Messages extends React.Component {
 		user: this.props.currentUser,
 		messagesLoading: true,
 		messages:[],
-		noMessages: false
+		noMessages: false,
+		userCount: 0,
+		searchTerm: '',
+		searchLoading: false,
+		searchResults: []
 	}
 
 	componentDidMount() {
@@ -56,7 +60,8 @@ class Messages extends React.Component {
 					messages: loadedMessages,
 					noMessages: false,
 					messagesLoading: false
-				})
+				});
+				this.countUsers(loadedMessages);
 			});
 	}
 
@@ -73,12 +78,59 @@ class Messages extends React.Component {
 		))
 	)
 
+	/**
+	 * Count num of message authors
+	 */
+	countUsers = (messages) => {
+		const users = messages.reduce((acc, message) => {
+			if (!acc.includes(message.user.name)) {
+				acc.push(message.user.name);
+			}
+			return acc;
+		}, []);
+		this.setState({ userCount: users.length });
+	}
+
+	/**
+	 * Set search state on input change
+	 */
+	handleSearchChange = (event) => {
+		this.setState({
+			searchTerm: event.target.value,
+			searchLoading: true
+		}, () => this.handleSearchMessages());
+	}
+
+	/**
+	 * Grab channel messages related to search
+	 */
+	handleSearchMessages = () => {
+		const channelMessages = [...this.state.messages];
+		const regex = new RegExp(this.state.searchTerm, 'gi');
+		const searchResults = channelMessages.reduce((acc, message) => {
+			if (
+				(message.content && message.content.match(regex)) || 
+				message.user.name.match(regex)
+			) {
+				acc.push(message);
+			}
+			return acc;
+		}, []);
+		this.setState({ searchResults });
+		setTimeout(() => this.setState({ searchLoading: false }), 500);
+	}
+
 	render() {
-		const { messagesRef, channel, user, messages, messagesLoading, noMessages } = this.state;
+		const { messagesRef, channel, user, messages, messagesLoading, noMessages, userCount, searchResults, searchTerm, searchLoading } = this.state;
 
 		return (
 			<React.Fragment>
-				<MessagesHeader channel={channel} />
+				<MessagesHeader 
+					channel={channel} 
+					userCount={userCount}
+					handleSearchChange={this.handleSearchChange}
+					searchLoading={searchLoading}
+				/>
 				<Segment className="messages">
 					{noMessages ? (
 						<MessageUI 
@@ -93,7 +145,7 @@ class Messages extends React.Component {
 						<Loader active style={{ marginTop: '2em' }} inline='centered' />
 					) : (
 						<Comment.Group>
-							{this.displayMessages(messages)}
+							{searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
 						</Comment.Group>
 					)}
 				</Segment>
