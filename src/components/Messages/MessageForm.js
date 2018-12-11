@@ -164,7 +164,13 @@ class MessageForm extends React.Component {
 						<Form.Field width={14}>
 							<Input
 								name="message"
-								label={<Button type="button" icon="camera" onClick={this.openUploadModal}></Button>}
+								label={
+									<Button 
+										type="button" 
+										icon="camera" 
+										disabled={uploadState === 'uploading'}
+										onClick={this.openUploadModal}
+									></Button>}
 								onChange={this.handleChange}
 								labelPosition="left"
 								placeholder="Write your message"
