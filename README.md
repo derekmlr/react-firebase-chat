@@ -1,4 +1,12 @@
-# Slack Clone using React, Redux, and Firebase
+# Slack Clone
+An simple Slack clone using React, Redux, and Firebase. Following along with an Udemy coding course while adding my own twists for better UX and codebase structure.
+
+To run locally...
+1. Clone the repo
+2. Do a `npm install`
+3. Then `cp src/config/firebase.js.example src/config/firebase.js`
+4. Add your Firebase config details in the new /src/config/firebase.js
+5. Finally, `npm start`
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
