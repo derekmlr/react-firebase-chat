@@ -61,12 +61,12 @@ class MessageForm extends React.Component {
 	 * Send message to Firebase store
 	 */
 	sendMessage = () => {
-		const { messagesRef } = this.props;
+		const { getMessagesRef } = this.props;
 		const { message, channel } = this.state;
 
 		if (message) {
 			this.setState({ isLoading: true });
-			messagesRef.child(channel.id)
+			getMessagesRef().child(channel.id)
 				.push()
 				.set(this.createMessage())
 				.then(() => {
@@ -97,12 +97,25 @@ class MessageForm extends React.Component {
 	}
 
 	/**
+	 * Determine upload path
+	 */
+	getUploadPath = () => {
+		if (this.props.isPrivateChannel) {
+			// Use private directory
+			return `chat/private-${this.state.channelId}`;
+		} else {
+			// Use public directory
+			return 'chat/public';
+		}
+	}
+
+	/**
 	 * Upload file to Firebase storage
 	 */
 	uploadFile = (file, metadata) => {
 		const channelId = this.state.channel.id;
-		const ref = this.props.messagesRef;
-		const filePath = `chat/public/${uuid4()}.png`;
+		const ref = this.props.getMessagesRef();
+		const filePath = `${this.getUploadPath()}/${uuid4()}.png`;
 
 		this.setState({
 			uploadState: 'uploading',

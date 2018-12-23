@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Menu, Icon, Modal, Form, Input, Button } from 'semantic-ui-react';
 
-import { setCurrentChannel } from '../../actions';
+import { setCurrentChannel, setPrivateChannel } from '../../actions';
 
 import firebase from '../../config/firebase';
 
@@ -106,14 +106,14 @@ class Channels extends React.Component {
 	/**
 	 * Display channel items
 	 */
-	displayChannels = (channels) => (
+	displayChannelsList = (channels) => (
 		channels.length > 0 && channels.map((channel) => (
 			<Menu.Item 
 				key={channel.id} 
 				onClick={() => this.changeChannel(channel)} 
 				name={channel.name} 
-				style={{ opacity: 0.7 }} 
 				active={channel.id === this.state.activeChannel}
+				className="menu-item"
 			>
 				# {channel.name}
 			</Menu.Item>
@@ -126,6 +126,7 @@ class Channels extends React.Component {
 	changeChannel = (channel) => {
 		this.setActiveChannel(channel);
 		this.props.setCurrentChannel(channel);
+		this.props.setPrivateChannel(false);
 	}
 
 	/**
@@ -140,17 +141,14 @@ class Channels extends React.Component {
 
 		return (
 			<React.Fragment>
-				<Menu.Menu style={{ paddingBottom: '2em' }}>
+				<Menu.Menu className="menu">
 					<Menu.Item>
-						<small>
-							<span>
-								<Icon name="exchange" /> CHANNELS
-							</span>{' '}
-							({ channels.length })
-						</small> 
+						<span className="menu-header">
+							Channels ({ channels.length })
+						</span>
 						<Icon name="add" onClick={this.openModal} />
 					</Menu.Item>
-					{this.displayChannels(channels)}
+					{this.displayChannelsList(channels)}
 				</Menu.Menu>
 
 				{ /* Add channel modal */ }
@@ -190,4 +188,4 @@ class Channels extends React.Component {
 	}
 }
 
-export default connect(null, { setCurrentChannel })(Channels);
+export default connect(null, { setCurrentChannel, setPrivateChannel })(Channels);

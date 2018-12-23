@@ -12,7 +12,9 @@ class Messages extends React.Component {
 
 	state = {
 		messagesRef: firebase.database().ref('messages'),
+		privateMessagesRef: firebase.database().ref('privateMessages'),
 		channel: this.props.currentChannel,
+		isPrivateChannel: this.props.isPrivateChannel,
 		user: this.props.currentUser,
 		messagesLoading: true,
 		messages:[],
@@ -52,8 +54,8 @@ class Messages extends React.Component {
 	 */
 	addMessageListener = (channelId) => {
 		let loadedMessages = [];
-		this.state.messagesRef
-			.child(channelId)
+		const ref = this.getMessagesRef();
+		ref.child(channelId)
 			.on('child_added', (snap) => {
 				loadedMessages.push(snap.val());
 				this.setState({
@@ -63,6 +65,14 @@ class Messages extends React.Component {
 				});
 				this.countUsers(loadedMessages);
 			});
+	}
+
+	/**
+	 * Get correct reference depending on channel type
+	 */
+	getMessagesRef = () => {
+		const { messagesRef, privateMessagesRef, isPrivateChannel } = this.state;
+		return isPrivateChannel ? privateMessagesRef : messagesRef;
 	}
 
 	/**
@@ -121,12 +131,13 @@ class Messages extends React.Component {
 	}
 
 	render() {
-		const { messagesRef, channel, user, messages, messagesLoading, noMessages, userCount, searchResults, searchTerm, searchLoading } = this.state;
+		const { messagesRef, channel, user, messages, messagesLoading, noMessages, userCount, searchResults, searchTerm, searchLoading, isPrivateChannel } = this.state;
 
 		return (
 			<React.Fragment>
 				<MessagesHeader 
 					channel={channel} 
+					isPrivateChannel={isPrivateChannel}
 					userCount={userCount}
 					handleSearchChange={this.handleSearchChange}
 					searchLoading={searchLoading}
@@ -154,6 +165,8 @@ class Messages extends React.Component {
 					channel={channel}
 					messagesRef={messagesRef} 
 					currentUser={user}
+					isPrivateChannel={isPrivateChannel}
+					getMessagesRef={this.getMessagesRef}
 				/>
 			</React.Fragment>
 		)
