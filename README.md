@@ -1,5 +1,5 @@
-# Slack Clone
-An simple Slack clone using React, Redux, and Firebase. Following along with an Udemy coding course while adding my own twists for better UX and codebase structure.
+# React Firebase Chat
+An simple Slack-like chat web app using React, Redux, and Firebase.
 
 To run locally...
 1. Clone the repo
