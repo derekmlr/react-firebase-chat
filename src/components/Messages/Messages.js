@@ -1,9 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Segment, Comment, Loader, Message as MessageUI } from 'semantic-ui-react';
 
 import MessagesHeader from './MessagesHeader';
 import MessageForm from './MessageForm';
 import Message from './Message';
+
+import { setChannelUsersPostCounts } from '../../actions';
 
 import firebase from '../../config/firebase';
 
@@ -15,7 +18,9 @@ class Messages extends React.Component {
 		privateMessagesRef: firebase.database().ref('privateMessages'),
 		channel: this.props.currentChannel,
 		isPrivateChannel: this.props.isPrivateChannel,
+		isChannelStarred: false,
 		user: this.props.currentUser,
+		usersRef: firebase.database().ref('users'),
 		messagesLoading: true,
 		messages:[],
 		noMessages: false,
@@ -29,7 +34,7 @@ class Messages extends React.Component {
 		const { channel, user } = this.state;
 
 		if (channel && user) {
-			this.addListeners(channel.id)
+			this.addListeners(channel.id, user.uid);
 		}
 
 		// If messages don't load after 1 second, assume no messages
@@ -45,8 +50,9 @@ class Messages extends React.Component {
 		clearTimeout(this.loadingTimeout);
 	}
 	
-	addListeners = (channelId) => {
+	addListeners = (channelId, userId) => {
 		this.addMessageListener(channelId);
+		this.addStarredListener(channelId, userId);
 	}
 
 	/**
@@ -64,7 +70,25 @@ class Messages extends React.Component {
 					messagesLoading: false
 				});
 				this.countUsers(loadedMessages);
+				this.countPosts(loadedMessages);
 			});
+	}
+
+	/**
+	 * Listens for starred status
+	 */
+	addStarredListener = (channelId, userId) => {
+		this.state.usersRef
+			.child(userId)
+			.child('starred')
+			.once('value')
+			.then((data) => {
+				if (data.val() !== null) {
+					const channelIds = Object.keys(data.val());
+					const alreadyStarred = channelIds.includes(channelId);
+					this.setState({ isChannelStarred: alreadyStarred });
+				}
+			})
 	}
 
 	/**
@@ -73,6 +97,43 @@ class Messages extends React.Component {
 	getMessagesRef = () => {
 		const { messagesRef, privateMessagesRef, isPrivateChannel } = this.state;
 		return isPrivateChannel ? privateMessagesRef : messagesRef;
+	}
+
+	/**
+	 * Toggle channel starring status
+	 */
+	handleStarring = () => {
+		this.setState((prevState) => ({
+			isChannelStarred: !prevState.isChannelStarred
+		}), () => this.starChannel());
+	}
+
+	/**
+	 * Update channel's starred status
+	 */
+	starChannel = () => {
+		const { isChannelStarred, usersRef, channel, user } = this.state;
+		if (isChannelStarred) {
+			usersRef
+				.child(`${user.uid}/starred`)
+				.update({
+					[channel.id]: {
+						name: channel.name,
+						desc: channel.desc,
+						createdBy: {
+							name: channel.createdBy.name,
+							avatar: channel.createdBy.avatar
+						}
+					}
+				});
+		} else {
+			usersRef
+				.child(`${user.uid}/starred`)
+				.child(channel.id)
+				.remove((err) => {
+					console.error(err);
+				});
+		}
 	}
 
 	/**
@@ -99,6 +160,24 @@ class Messages extends React.Component {
 			return acc;
 		}, []);
 		this.setState({ userCount: users.length });
+	}
+
+	/**
+	 * Create an 
+	 */
+	countPosts = (messages) => {
+		let posts = messages.reduce((acc, message) => {
+			if (message.user.name in acc) {
+				acc[message.user.name].count += 1;
+			} else {
+				acc[message.user.name] = {
+					avatar: message.user.avatar,
+					count: 1
+				}
+			}
+			return acc;
+		}, {});
+		this.props.setChannelUsersPostCounts(posts);
 	}
 
 	/**
@@ -131,7 +210,7 @@ class Messages extends React.Component {
 	}
 
 	render() {
-		const { messagesRef, channel, user, messages, messagesLoading, noMessages, userCount, searchResults, searchTerm, searchLoading, isPrivateChannel } = this.state;
+		const { messagesRef, channel, user, messages, messagesLoading, noMessages, userCount, searchResults, searchTerm, searchLoading, isPrivateChannel, isChannelStarred } = this.state;
 
 		return (
 			<React.Fragment>
@@ -141,7 +220,10 @@ class Messages extends React.Component {
 					userCount={userCount}
 					handleSearchChange={this.handleSearchChange}
 					searchLoading={searchLoading}
+					handleStarring={this.handleStarring}
+					isChannelStarred={isChannelStarred}
 				/>
+				
 				<Segment className="messages">
 					{noMessages ? (
 						<MessageUI 
@@ -173,4 +255,4 @@ class Messages extends React.Component {
 	}
 }
 
-export default Messages;
+export default connect(null, { setChannelUsersPostCounts })(Messages);

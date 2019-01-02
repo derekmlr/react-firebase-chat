@@ -19,6 +19,14 @@ export const setPrivateChannel = (isPrivateChannel) => {
 		}
 	}
 }
+export const setChannelUsersPostCounts = (posts) => {
+	return {
+		type: actionTypes.SET_CHANNEL_USERS_POST_COUNTS,
+		payload: {
+			posts
+		}
+	}
+}
 
 /**
  * User Actions

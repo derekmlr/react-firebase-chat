@@ -106,6 +106,9 @@ class Channels extends React.Component {
 		}
 	}
 
+	/**
+	 * Gets current unread count for channel
+	 */
 	getNotificationsCount = (channel) => {
 		let count = 0;
 
@@ -152,7 +155,10 @@ class Channels extends React.Component {
 			id: key,
 			name: channelName,
 			desc: channelDesc,
-			owner_id: user.uid
+      createdBy: {
+        name: user.displayName,
+        avatar: user.photoURL
+      }
 		};
 
 		channelsRef

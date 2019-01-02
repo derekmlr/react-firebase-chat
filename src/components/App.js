@@ -14,7 +14,7 @@ import './App.css';
  * 
  * @param {Object} props 
  */
-const App = ({ currentUser, currentChannel, isPrivateChannel }) => (
+const App = ({ currentUser, currentChannel, isPrivateChannel, channelUsersPostCounts }) => (
   <Grid columns="equal" className="App">
     <ServersPanel />
     <RoomsPanel
@@ -31,8 +31,13 @@ const App = ({ currentUser, currentChannel, isPrivateChannel }) => (
       />
     </Grid.Column>
 
-    <Grid.Column width="3">
-      <MetaPanel />
+    <Grid.Column width="4">
+      <MetaPanel 
+        key={currentChannel && currentChannel.id}
+        currentChannel={currentChannel}
+        isPrivateChannel={isPrivateChannel}
+        channelUsersPostCounts={channelUsersPostCounts}
+      />
     </Grid.Column>
   </Grid>
 )
@@ -45,7 +50,8 @@ const App = ({ currentUser, currentChannel, isPrivateChannel }) => (
 const mapStateToProps = (state) => ({
   currentUser: state.user.currentUser,
   currentChannel: state.channel.currentChannel,
-  isPrivateChannel: state.channel.isPrivateChannel
+  isPrivateChannel: state.channel.isPrivateChannel,
+  channelUsersPostCounts: state.channel.channelUsersPostCounts
 });
 
 export default connect(mapStateToProps)(App);

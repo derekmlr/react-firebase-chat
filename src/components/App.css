@@ -11,7 +11,7 @@ body,
 	padding: 1em;
 }
 
-/*
+/**
  * Rooms Panel
  */
 .menu {
@@ -26,7 +26,7 @@ body,
 	border-radius: .28571429rem !important;
 }
 
-/*
+/**
  * Messages
  */
 .messages {
@@ -45,7 +45,7 @@ body,
 	position: fixed;
 }
 
-/*
+/**
  * Misc
  */
 .progress-bar {
